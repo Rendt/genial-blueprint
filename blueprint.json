@@ -1,0 +1,14 @@
+{
+  "name": "genial-blueprint",
+  "version": "1.0.0",
+  "description": "Master Blueprint Repo for Rapid Prototyping (AI Studio) and Production Sync (VS Code).",
+  "modules": {
+    "toast": "modules/toast.tsx",
+    "auth": "modules/auth.ts",
+    "modal": "modules/modal.tsx",
+    "styles": "modules/index.css"
+  },
+  "docs": {
+    "instructions": "docs/agent_instructions.md"
+  }
+}
