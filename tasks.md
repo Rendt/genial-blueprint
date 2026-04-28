@@ -1,15 +1,14 @@
-### Architecture & Design
-- [ ] Define data models
-- [ ] Create wireframes
+### Discovery
 
-### Core Build
-- [ ] Setup project structure
-- [ ] Implement core features
+### Scoping
 
-### Debug & Polish
-- [ ] Fix known bugs
-- [ ] Refactor UI components
+### Validation
 
-### Deploy
-- [ ] Configure deployment settings
-- [ ] Launch MVP
+### Development
+- [ ] standardize to tasks.md in root. Vibe Coder OS ok, but check agent guidelines and template?
+
+### Launch
+
+### Marketing
+
+### Maintenance
