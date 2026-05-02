@@ -1,4 +1,5 @@
 # Project Roadmap
+Planned app development and feature implementation, ready to implement.
 
 ## 🎯 Vision
 A brief description of the project goal.

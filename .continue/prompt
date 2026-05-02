@@ -1,0 +1,4 @@
+Context: Vibecoding in React/TypeScript with Supabase.
+Goal: 100% Agentic accuracy.
+Rule: Always prefer Vitest for logic verification.
+Rule: Standardize component structure using functional React hooks and Tailwind CSS.

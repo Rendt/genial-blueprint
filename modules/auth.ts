@@ -1,61 +1,72 @@
-import { supabase } from './supabase';
-
 /**
- * ADAPTIVE AUTH SERVICE
- * Industry Practice: Use Redirects for production reliability/mobile.
- * AI Studio Support: Use Popups for iFrame sandbox compatibility.
+ * PORTABLE SUPABASE AUTH SERVICE
  * 
- * Pattern: Single-File Portable Service.
+ * Version: 2.1.0
+ * Date: 2026-05-02
+ * Pattern: Adaptive Auth (Redirect vs Popup).
+ * 
+ * FEATURES:
+ * - Intelligent Environment Detection (isEmbedded).
+ * - Automatic "SignInWithPopup" fallback for iFrames/Sandboxes.
+ * - Dynamic Redirect URL resolution.
+ * - Zero external dependencies (beyond supabase client).
  */
+
+import { SupabaseClient } from '@supabase/supabase-js';
+
+export interface AuthConfig {
+    scopes?: string;
+    redirectTo?: string;
+}
 
 export const isEmbedded = (): boolean => {
     if (typeof window === 'undefined') return false;
     try {
         return window.self !== window.top;
     } catch (e) {
-        // Cross-origin access to window.top throws error in some restricted frames
         return true;
     }
 };
 
-export const authService = {
-    /**
-     * Adaptive Sign In
-     * Chooses between popup and redirect based on the environment.
-     */
-    signInWithGoogle: async () => {
-        const embedded = isEmbedded();
-        const currentOrigin = typeof window !== 'undefined' ? window.location.origin : '';
-        const redirectUrl = currentOrigin.replace(/\/$/, '') + '/';
+/**
+ * Creates a configured Auth Service bound to a Supabase instance.
+ */
+export const createAuthService = (supabase: SupabaseClient, config: AuthConfig = {}) => {
+    return {
+        signInWithGoogle: async (overrideConfig?: AuthConfig) => {
+            const embedded = isEmbedded();
+            const currentOrigin = typeof window !== 'undefined' ? window.location.origin : '';
+            const defaultRedirect = currentOrigin.replace(/\/$/, '') + '/';
 
-        console.log(`[AuthService] Initializing Google Sign-In (Mode: ${embedded ? 'Popup' : 'Redirect'})`);
+            const activeScopes = overrideConfig?.scopes || config.scopes || '';
+            const activeRedirect = overrideConfig?.redirectTo || config.redirectTo || defaultRedirect;
 
-        const options: any = {
-            provider: 'google',
-            options: {
-                scopes: 'https://www.googleapis.com/auth/tasks https://www.googleapis.com/auth/calendar.readonly',
-                redirectTo: redirectUrl,
+            const options: any = {
+                provider: 'google',
+                options: {
+                    scopes: activeScopes,
+                    redirectTo: activeRedirect,
+                }
+            };
+
+            if (embedded) {
+                return await supabase.auth.signInWithPopup(options);
+            } else {
+                return await supabase.auth.signInWithOAuth(options);
             }
-        };
+        },
 
-        if (embedded) {
-            // Adaptive Fallback: Popups work inside iframes where top-level redirects are blocked
-            return await supabase.auth.signInWithPopup(options);
-        } else {
-            // Production Standard: Redirects are most reliable on mobile and diverse browsers
-            return await supabase.auth.signInWithOAuth(options);
+        signOut: async () => {
+            return await supabase.auth.signOut();
+        },
+
+        getSession: async () => {
+            return await supabase.auth.getSession();
+        },
+
+        onAuthStateChange: (callback: (event: string, session: any) => void) => {
+            const { data: { subscription } } = supabase.auth.onAuthStateChange(callback);
+            return subscription;
         }
-    },
-
-    signOut: async () => {
-        return await supabase.auth.signOut();
-    },
-
-    getSession: async () => {
-        return await supabase.auth.getSession();
-    },
-
-    onAuthStateChange: (callback: (event: string, session: any) => void) => {
-        return supabase.auth.onAuthStateChange(callback);
-    }
+    };
 };

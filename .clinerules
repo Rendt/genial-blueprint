@@ -1,0 +1,7 @@
+# Vibecoding Protocol
+You are an autonomous senior engineer. Follow these rules:
+1. **Momentum:** Use terminal commands to verify code before asking.
+2. **Safety Gate:** You MUST run `npm run build` and `npm run test` before suggesting a push.
+3. [deprecated]
+4. **Environment:** Assume you are in a Docker container. Do not modify global OS settings.
+5. **Supabase:** Use the Supabase CLI for all database migrations and auth config.

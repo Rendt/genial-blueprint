@@ -1,9 +1,31 @@
+/**
+ * PORTABLE MODAL & CARD SYSTEM
+ * 
+ * Version: 1.0.0
+ * Date: 2026-05-02
+ * Pattern: Atomic Card-based layout with deep accessibility.
+ */
+
 import React, { useEffect } from 'react';
 
-/**
- * PORTABLE MODAL COMPONENT
- * Pattern: Consistent, Accessible, Tailwind-Styled.
- */
+// --- Card (Atomic Unit) ---
+
+interface CardProps {
+    children: React.ReactNode;
+    className?: string;
+    onClick?: () => void;
+}
+
+export const Card: React.FC<CardProps> = ({ children, className = '', onClick }) => (
+    <div 
+        onClick={onClick}
+        className={`bg-white rounded-3xl border border-slate-100 p-6 transition-all duration-300 ${onClick ? 'cursor-pointer hover:shadow-xl hover:-translate-y-1' : ''} ${className}`}
+    >
+        {children}
+    </div>
+);
+
+// --- Modal (Layout Wrapper) ---
 
 interface ModalProps {
     isOpen: boolean;
@@ -22,7 +44,6 @@ export const Modal: React.FC<ModalProps> = ({
     footer,
     size = 'md'
 }) => {
-    // Handle Escape key
     useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
@@ -49,9 +70,9 @@ export const Modal: React.FC<ModalProps> = ({
             />
             
             {/* Modal Content */}
-            <div className={`relative w-full ${sizeClasses[size]} bg-white rounded-xl shadow-2xl flex flex-col max-h-[90vh] animate-in zoom-in-95 fade-in duration-200 overflow-hidden`}>
+            <Card className={`relative w-full ${sizeClasses[size]} bg-white shadow-2xl flex flex-col max-h-[90vh] animate-in zoom-in-95 fade-in duration-200`}>
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-white">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
                     <h3 className="text-lg font-bold text-slate-900">{title}</h3>
                     <button 
                         onClick={onClose}
@@ -62,7 +83,7 @@ export const Modal: React.FC<ModalProps> = ({
                 </div>
                 
                 {/* Body */}
-                <div className="flex-1 overflow-y-auto px-6 py-6 overflow-x-hidden bg-white text-left">
+                <div className="flex-1 overflow-y-auto px-6 py-6 overflow-x-hidden">
                     {children}
                 </div>
                 
@@ -72,61 +93,7 @@ export const Modal: React.FC<ModalProps> = ({
                         {footer}
                     </div>
                 )}
-            </div>
+            </Card>
         </div>
-    );
-};
-
-/**
- * CONVENIENCE: CONFIRMATION DIALOG
- */
-interface ConfirmModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onConfirm: () => void;
-    title: string;
-    message: string;
-    confirmText?: string;
-    cancelText?: string;
-    variant?: 'primary' | 'danger';
-}
-
-export const ConfirmModal: React.FC<ConfirmModalProps> = ({
-    isOpen,
-    onClose,
-    onConfirm,
-    title,
-    message,
-    confirmText = 'Confirm',
-    cancelText = 'Cancel',
-    variant = 'primary'
-}) => {
-    return (
-        <Modal 
-            isOpen={isOpen} 
-            onClose={onClose} 
-            title={title}
-            size="sm"
-            footer={
-                <>
-                    <button 
-                        className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
-                        onClick={onClose}
-                    >
-                        {cancelText}
-                    </button>
-                    <button 
-                        className={`px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors ${
-                            variant === 'danger' ? 'bg-red-600 hover:bg-red-700' : 'bg-ocean-600 hover:bg-ocean-700'
-                        }`}
-                        onClick={() => { onConfirm(); onClose(); }}
-                    >
-                        {confirmText}
-                    </button>
-                </>
-            }
-        >
-            <p className="text-sm text-slate-600 leading-relaxed">{message}</p>
-        </Modal>
     );
 };
