@@ -3,6 +3,11 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  define: {
+    'process.env.BUILD_TIMESTAMP': JSON.stringify(new Date().toISOString()),
+    '__BUILD_TIMESTAMP__': JSON.stringify(new Date().toISOString()),
+    '__BUILD_NUMBER__': JSON.stringify(process.env.VERCEL_GIT_COMMIT_SHA || 'dev-' + Math.floor(Date.now() / 1000)),
+  },
   test: {
     globals: true,
     environment: 'jsdom',

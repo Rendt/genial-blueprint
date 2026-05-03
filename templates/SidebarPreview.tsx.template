@@ -1,0 +1,87 @@
+import React, { useState } from 'react';
+import { 
+  LayoutDashboard, 
+  Target, 
+  CheckSquare, 
+  Calendar, 
+  BookOpen, 
+  Settings, 
+  Zap,
+  Globe,
+  Database
+} from 'lucide-react';
+import { Sidebar, NavItem } from '../modules/Sidebar';
+
+/**
+ * Preview component for testing the modular Sidebar.
+ */
+export default function SidebarPreview() {
+  const [activeId, setActiveId] = useState('dashboard');
+
+  const mainItems: NavItem[] = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'focus', label: 'Today\'s Focus', icon: Target, badge: 3 },
+    { id: 'tasks', label: 'My Tasks', icon: CheckSquare, status: 'in-progress' },
+    { id: 'calendar', label: 'Calendar', icon: Calendar }
+  ];
+
+  const workflowItems: NavItem[] = [
+    { id: 'step1', label: 'Architecture', icon: Globe, status: 'completed' },
+    { id: 'step2', label: 'Database Design', icon: Database, status: 'in-progress' },
+    { id: 'step3', label: 'Build Phase', icon: Zap, status: 'todo' }
+  ];
+
+  const sysItems: NavItem[] = [
+    { id: 'docs', label: 'Documentation', icon: BookOpen },
+    { id: 'settings', label: 'Settings', icon: Settings }
+  ];
+
+  return (
+    <div className="flex h-screen bg-slate-50">
+      <Sidebar 
+        appName="Genial OS"
+        activeId={activeId}
+        onNavigate={setActiveId}
+        user={{
+          name: 'Senior Architect',
+          email: 'vibe@genial.dev'
+        }}
+        sections={[
+          { title: 'Overview', items: mainItems },
+          { title: 'Project Pathway', items: workflowItems },
+          { title: 'System', items: sysItems }
+        ]}
+        onSearch={(q) => console.log('Searching:', q)}
+        onQuickAction={() => alert('Quick Action!')}
+        onDebugClick={() => alert('Debug Menu context')}
+        onHelpClick={() => alert('Help Iframe system')}
+        showMenuEditor={true}
+        onEditMenu={() => alert('Opening menu editor...')}
+      />
+      
+      <main className="flex-1 sm:ml-64 p-8 transition-all">
+        <div className="max-w-4xl mx-auto mt-12 sm:mt-0">
+          <header className="mb-8">
+            <h2 className="text-3xl font-light text-slate-800">Sidebar Module Preview</h2>
+            <p className="text-slate-500">A high-aesthetic, modular sidebar synthesized from top-tier apps.</p>
+          </header>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
+              <h3 className="font-bold text-slate-800 mb-2">Feature: Tiered Org</h3>
+              <p className="text-sm text-slate-600">Supports section headers and grouped navigation items with status tracking.</p>
+            </div>
+            <div className="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
+              <h3 className="font-bold text-slate-800 mb-2">Feature: Adaptive Mobile</h3>
+              <p className="text-sm text-slate-600">Shrink the viewport to see the mobile slide-over and backdrop behavior.</p>
+            </div>
+          </div>
+          
+          <div className="mt-8 p-6 bg-ocean-50 rounded-2xl border border-ocean-100 italic text-ocean-800 text-sm">
+            "Design is not just what it looks like and feels like. Design is how it works."
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}

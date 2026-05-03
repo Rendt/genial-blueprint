@@ -1,0 +1,95 @@
+import React, { useState, useEffect } from 'react';
+import { toast } from '../modules/toast';
+import { Modal } from '../modules/modal';
+import { authService } from '../modules/auth';
+
+/**
+ * GENIAL APP TEMPLATE: App.tsx
+ * Standardized entry point optimized for AI Studio and Production.
+ * Adheres to Genial Standard: High-Aesthetic, Environment-Adaptive.
+ */
+
+const App: React.FC = () => {
+  const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        const { data: { session: currentSession } } = await authService.getSession();
+        setSession(currentSession);
+      } catch (err) {
+        toast.error("Authentication failed to initialize.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initAuth();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-slate-50 text-slate-400">
+        <div className="animate-pulse">Loading App...</div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="h-screen flex flex-col items-center justify-center bg-slate-50 p-8">
+        <h1 className="text-3xl font-bold text-slate-900 mb-2">Welcome</h1>
+        <p className="text-slate-500 mb-8 text-center max-w-sm">Sign in with your Google account to access your personal dashboard.</p>
+        <button 
+          onClick={() => authService.signInWithOAuth()}
+          className="bg-indigo-600 text-white px-8 py-3 rounded-2xl font-bold shadow-lg hover:bg-indigo-700 transition-all hover:scale-[1.02] active:scale-[0.98]"
+        >
+          Sign in with Google
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50 p-4 sm:p-8">
+      <header className="max-w-5xl mx-auto flex justify-between items-center mb-12">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Genial App</h1>
+          <p className="text-xs text-slate-500 font-medium">Build: {typeof __BUILD_NUMBER__ !== 'undefined' ? __BUILD_NUMBER__ : 'dev'}</p>
+        </div>
+        <button 
+          onClick={() => authService.signOut()}
+          className="text-xs font-bold text-slate-400 hover:text-slate-900 bg-white px-4 py-2 rounded-xl border border-slate-200 transition-all shadow-sm"
+        >
+          Sign Out
+        </button>
+      </header>
+
+      <main className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <svg className="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <h2 className="text-xl font-bold text-slate-800 mb-4">Module Integration</h2>
+          <p className="text-sm text-slate-500 mb-6 leading-relaxed">Your blueprint modules (Toast, Modal, Auth) are pre-wired and ready for use.</p>
+          <div className="flex gap-4">
+            <button 
+              onClick={() => toast.success("Module system active!")}
+              className="bg-emerald-50 text-emerald-700 px-5 py-2.5 rounded-xl text-sm font-bold border border-emerald-100 hover:bg-emerald-100 transition-colors"
+            >
+              Test Notification
+            </button>
+          </div>
+        </div>
+      </main>
+      
+      <footer className="max-w-5xl mx-auto mt-20 pt-8 border-t border-slate-200 flex justify-between items-center opacity-50">
+        <span className="text-[10px] font-bold tracking-widest uppercase">Genial Standard v2.0</span>
+        <span className="text-[10px] font-bold">{typeof __BUILD_TIMESTAMP__ !== 'undefined' ? __BUILD_TIMESTAMP__ : new Date().toLocaleDateString()}</span>
+      </footer>
+    </div>
+  );
+};
+
+export default App;

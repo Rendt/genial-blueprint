@@ -38,3 +38,9 @@ The AI Studio preview window renders applications inside an iframe. You must des
 ### 6. Troubleshooting Protocol
 
 * If the user reports UI layout issues, Refused to connect errors, or persistent OAuth failures, your first troubleshooting step MUST be to instruct the user to open the app in a **New Tab** (using the top-right icon in the preview). Explain that this bypasses the iframe sandbox and often resolves localized environment issues.
+
+### 7. Documentation & Evolution
+
+* **Lessons Learned:** You MUST document any environment-specific bugs or architectural workarounds in `docs/lessons.md`.
+* **Master Improvements:** If you discover a pattern that prevents a recurring issue, suggest an update to the `genial-blueprint` parent policies. 
+

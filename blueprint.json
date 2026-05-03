@@ -5,7 +5,7 @@
   "modules": {
     "toast": "modules/toast.tsx",
     "auth": "modules/auth.ts",
-    "modal": "modules/modal.tsx",
+    "modal": "modules/Modal.tsx",
     "styles": "modules/index.css"
   },
   "docs": {
