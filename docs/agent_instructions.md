@@ -168,7 +168,18 @@ All apps must follow these policies.
 
 ---
 
-## 
+## 11. Environment & Secrets Management
+
+To maintain security while optimizing for development speed, the following policy applies:
+
+* **Production:** Use **Doppler** for all secret management. Do NOT store production secrets in `.env` files or commit them to the repository.
+* **Development & Testing:** Use **`.env`** files. Since the repository is private, `.env` files for development and testing environments are permitted to be committed to Git for consistency across devices.
+* **Cascading Environment Variables:** The backend (`server.ts`) is designed to mimic Vite/Next.js cascading `.env` loading. It checks files in this priority order: `1. .env.[mode].local`, `2. .env.[mode]`, `3. .env.local`, `4. .env`.
+  * **Automatic Operation:** Local development (`npm run dev`) automatically defaults to `development` mode. Vercel deployments automatically set `NODE_ENV="production"`. You do **not** need any manual action or configuration switching for standard local or Vercel workflows.
+  * **Custom Environments (Testing):** To test custom endpoints (e.g., Firebase, Staging), simply prefix the start command. Example: `NODE_ENV=firebase npm run dev` will fetch `.env.firebase.local` first.
+  * **New Repo Setup:** When bootstrapping a new Express repository, manually implement this cascading logic early in `server.ts` using `process.env.NODE_ENV` and `dotenv.config({ path: ... })`.
+* **Secret Rotation:** Even in private repositories, sensitive keys (e.g., Stripe secret keys, AWS keys) should be rotated if the repository access changes or if a security breach is suspected.
+* **Vercel Env Sync Rule:** Vercel deployments do NOT read `.env` files — only env vars set in the Vercel dashboard or declared in `vercel.json` are available at runtime. Therefore: any time a variable is added, changed, or removed in `.env`, the corresponding entry in `vercel.json` under the `"env"` key MUST be updated in the same commit. The agent should flag this as a blocking step before pushing.
 
 ---
 
@@ -180,6 +191,47 @@ All apps must follow these policies.
 
 * Upon initialization, silently check the workspace for `docs/agent_instructions.md.`
 * **If found:** Load it. These rules are absolute.
-* **If missing:** Inform the user and ask how they want to proceed 
+* **If missing:** Inform the user and ask if they want to proceed with Simplified Coding Policies.
 
-### 
+### SIMPLIFIED CODING POLICIES
+
+#### 1. CORE EXECUTION RULES
+
+* **Plan First:** Never code without presenting a technical plan.
+* **Read Before Write:** Read existing patterns and docs/specs.md before editing to prevent context loss.
+* **Incremental Diffs:** Output specific diffs/functions, not entire files.
+* **Build Integrity:** Always run npm run build and restart the server for dist-based apps.
+* **UI/UX:** Use Tailwind/Lucide. Do not remove existing UI or truncate text.
+* **Thin Slices:** Implement → Test → Verify → Expand.
+
+#### 2. DOCUMENTATION SYSTEM (The `/docs` Folder)
+
+Keep the root clean (except `README.md` and `CHANGELOG.md`).
+
+* **`roadmap.md`:** Strategic vision and future features.
+* **`specs.md`:** Technical blueprints & Data Architecture (Read-Only reference).
+* **`ideas.md`:** Inbox for spontaneous ideas (Do not build immediately; triage here).
+* **`tasks.md`:** Active, granular scratchpad for the current build.
+* **`lessons.md`:** Post-mortems (Failure mode → Prevention rule).
+
+#### 3. THE WORKCYCLE (Standard Mode)
+
+* **Turn 1 (Seed):** Define vision & design tokens → update docs/roadmap.md.
+* **Turn 2 (Map):** Define data architecture & complexity → update docs/specs.md.
+* **Turn 3 (Build):** Execute code → track progress in docs/tasks.md.
+
+#### 4. BUG FIXING (Stop-The-Line)
+
+If a test/build fails, stop coding. Do not offload debugging to the user.
+
+1. **Protocol:** 1. Reproduce → 2. Localize → 3. Isolate minimal case → 4. Fix root cause → 5. Guard against regression → 6. Verify.
+
+#### 5. DEFINITION OF DONE
+
+A task is only done when:
+
+* Acceptance criteria met.
+* Verification (Lint/Audit/Build/Test) passed via `npm run test:related`.
+* docs/tasks.md is checked [x].
+* CHANGELOG.md (SemVer) and meta.json are updated.
+* You provide a brief verification story: *"What changed + how we know it works."*
